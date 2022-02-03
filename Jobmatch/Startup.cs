@@ -1,3 +1,4 @@
+using Jobmatch.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,6 +25,14 @@ namespace Jobmatch
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+
+            var JobAdderApiBaseUrl = Configuration.GetValue<string>("JobAdderApiBaseUrl");
+
+            services.AddSingleton(new JobAdderApi { BaseUrl = JobAdderApiBaseUrl });
+
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +54,17 @@ namespace Jobmatch
 
             app.UseRouting();
 
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "api",
+                    template: "api/{controller}");
+            });
+
+
             app.UseAuthorization();
+
+
 
             app.UseEndpoints(endpoints =>
             {
