@@ -1,23 +1,59 @@
 ﻿@page
 
-const { ajax } = require("jquery");
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-    
+
 }
+
+
+<style>
+    th, td, table {
+     
+      border: 1px solid black;
+    }
+
+  
+</style>
+
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 
+<h1>Job Matching Results</h1>
 <div class="text-center">
-  
+    <div id="matchresult"></div>
 </div>
 
 <script>
 
- $(document).ready(function () {
+    $(document).ready(function () {
+
+        $.get("api/match/go", function(data, status){
+            $('#matchresult').append(CreateTableHeader());
+            $('#matchresult').append(CreateTable(data));
+         });
+
+       });
 
 
+       function CreateTable(jobMatchData)  {
 
-    });
+           var result  = '<tbody>'; 
+           jobMatchData.forEach(function(item, i) {
+               
+              var job = item.job;
+              var candidate = item.candidate;
+              result += '<tr><td style = "width:100px">'+job.jobId+'</td><td style = "width:100px">'+ job.name+' </td><td style = "width:100px">'+job.company+ '</td><td style = "width:300px">'+ job.skills + '</td><td style = "width:100px">' +
+                        candidate.candidateId+ '</td><td style = "width:100px">'+ candidate.name+ '</td><td style = "width:300px">'+ candidate.skillTags+ '</td></tr>';
+
+            });
+
+            return result + '</tbody></table>';
+           
+
+       }
+
+       function CreateTableHeader(){
+           return '<table><thead><tr><th style = "width:100px" >JobId</th><th style = "width:100px">JobName</th><th style = "width:100px" >Company</th><th style = "width:300px">Skills</th><th style = "width:100px">CandidateId</th><th style = "width:100px">Name</th><th style = "width:300px">SkillTags</th></tr></thead>';
+       }
 </script>
